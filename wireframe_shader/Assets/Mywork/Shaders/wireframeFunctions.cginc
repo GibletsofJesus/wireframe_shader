@@ -11,6 +11,7 @@
 struct wf_v2g
 {
 	float4	pos		: POSITION;		// vertex position
+	//float4	color	: COLOR;
 	float2  uv		: TEXCOORD0;	// vertex uv coordinate
 };
 
@@ -18,6 +19,7 @@ struct wf_v2g
 struct wf_g2f
 {
 	float4	pos		: POSITION;		// fragment position
+	//float4  color	: COLOR;
 	float2	uv		: TEXCOORD0;	// fragment uv coordinate
 	float3  dist	: TEXCOORD1;	// distance to each edge of the triangle
 };
@@ -29,7 +31,7 @@ float _Thickness = 1;		// Thickness of the wireframe line rendering
 float4 _Color = {1,1,1,1};	// Color of the line
 float4 _MainTex_ST;			// For the Main Tex UV transform
 sampler2D _MainTex;			// Texture used for the line
-float _Fill = 0;
+float _Fill;
 
 // SHADER PROGRAMS //
 // Vertex Shader
@@ -41,6 +43,7 @@ float _Fill = 0;
 wf_v2g wf_vert(appdata_base v)
 {
 	wf_v2g output; //This is our output
+	//output.color.a = 0.1f;
 	output.pos =  mul(UNITY_MATRIX_MVP, v.vertex); //pos = (Current model * view * projection matrix) * vertex data
 	output.uv = TRANSFORM_TEX (v.texcoord, _MainTex);//v.texcoord;
 
@@ -104,9 +107,13 @@ float4 wf_frag(wf_g2f input) : COLOR
 	val = exp2( -1/_Thickness * val * val );
 		
 	//blend between the lines and the negative space to give illusion of anti aliasing
-	float4 targetColor = _Color; //* tex2D( _MainTex, input.uv);
-	float4 transCol = tex2D( _MainTex, input.uv);
+	//float4 targetColor = _Color;// *tex2D(_MainTex, input.uv);
+	//float4 transCol = tex2D( _MainTex, input.uv);
+
+	float4 targetColor = _Color * tex2D(_MainTex, input.uv);
+	float4 transCol = _Color * tex2D(_MainTex, input.uv);
 	transCol.a = _Fill;
+
 	return val * targetColor + ( 1 - val ) * transCol;
 }
 

@@ -1,38 +1,41 @@
-﻿Shader "Custom/wireframe" 
-{
+﻿Shader "Custom/wireframe" {
 
 	Properties 
 	{
-		_Opacity ("Opacity", range(0,1)) = 1
-		_Fill ("Wireframe fill %", range(0,1)) = 0 //Bools are not supported in Shader Lab. YES, REALLY.
-		_Color ("Wireframe Color", Color) = (1,1,1,1)
-		_MainTex ("Main Texture", 2D) = "white" {}
-		_Thickness ("Thickness", range(0,10)) = 1
+		_BaseTex("Base Texture", 2D) = "white" {}
+		_Alpha("Base Texture Alpha", range(0, 1)) = 1
+		_Tint("Base Texture Tint Color", Color) = (1, 1, 1, 1)
+		_MainTex("WF Texture", 2D) = "white" {}
+		_Fill ("WF Texture Alpha", range(0,1)) = 0 //Bools are not supported in Shader Lab. YES, REALLY.
+		_Color ("WF Color", Color) = (1,1,1,1)
+		_Thickness ("WF Thickness", range(0,10)) = 1
 	}
 
-	SubShader 
-	{
-		
-			Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+	SubShader
+		{
 
-				 CGPROGRAM
-				     #pragma surface surf Lambert alpha
- 
-					 sampler2D _MainTex;
-					 fixed4 _Color;
-					 float _Opacity;
-					 
-					 struct Input {
-					     float2 uv_MainTex;
-					 };
-					 
-					 void surf (Input IN, inout SurfaceOutput o) {
-					     fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-					     o.Albedo = c.rgb;
-					     o.Alpha = _Opacity;
-					 }
-			    ENDCG
-			    
+			Tags{ "RenderType" = "Transparent" "Queue" = "Transparent" }
+
+			CGPROGRAM
+				#pragma surface surf Lambert alpha
+
+				sampler2D _BaseTex;
+				fixed4 _Color, _Tint;
+				float _Alpha;
+
+				struct Input {
+					float2 uv_BaseTex;
+				};
+
+				void surf(Input IN, inout SurfaceOutput o) {
+					fixed4 c = tex2D(_BaseTex, IN.uv_BaseTex) / _Color;
+					o.Albedo = c.rgb * _Tint;
+					//o.Alpha = c.a;
+					o.Alpha = _Alpha;
+				}
+		
+			ENDCG
+
 		Pass
 		{
 			Tags { "RenderType"="Transparent" "Queue"="Transparent" }
@@ -52,6 +55,7 @@
 				// Vertex Shader
 				wf_v2g vert(appdata_base v)
 				{
+					//v.color.a = 0.2f;
 					return wf_vert(v);
 				}
 				
