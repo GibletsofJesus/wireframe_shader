@@ -44,7 +44,7 @@ wf_v2g wf_vert(appdata_base v)
 {
 	wf_v2g output; //This is our output
 	//output.color.a = 0.1f;
-	output.pos =  mul(UNITY_MATRIX_MVP, v.vertex); //pos = (Current model * view * projection matrix) * vertex data
+	output.pos = mul(UNITY_MATRIX_MVP, v.vertex); //pos = (Current model * view * projection matrix) * vertex data
 	output.uv = TRANSFORM_TEX (v.texcoord, _MainTex);//v.texcoord;
 
 	return output;
@@ -108,10 +108,10 @@ float4 wf_frag(wf_g2f input) : COLOR
 		
 	//blend between the lines and the negative space to give illusion of anti aliasing
 	//float4 targetColor = _Color;// *tex2D(_MainTex, input.uv);
-	//float4 transCol = tex2D( _MainTex, input.uv);
+	float4 transCol = tex2D( _MainTex, input.uv);
 
 	float4 targetColor = _Color * tex2D(_MainTex, input.uv);
-	float4 transCol = _Color * tex2D(_MainTex, input.uv);
+	//float4 transCol = _Color * tex2D(_MainTex, input.uv);
 	transCol.a = _Fill;
 
 	return val * targetColor + ( 1 - val ) * transCol;
