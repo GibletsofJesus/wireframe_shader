@@ -33,9 +33,9 @@
 				};
 
 				void surf(Input IN, inout SurfaceOutput o) {
-					fixed4 c = tex2D(_SubBaseTex, IN.uv_SubBaseTex)* _SubTint;
+					fixed4 c = tex2D(_SubBaseTex, IN.uv_SubBaseTex) * _SubTint;
 					o.Albedo = c.rgb * _SubTint;
-					//o.Alpha = c.a;
+					o.Alpha = c.a;
 					o.Alpha = _SubAlpha;
 				}
 		
@@ -54,9 +54,8 @@
 
 				void surf(Input IN, inout SurfaceOutput o) {
 					fixed4 c = tex2D(_BaseTex, IN.uv_BaseTex) * _Tint;
-					o.Albedo = _Tint;//c.rgb * _Tint;
-					o.Alpha = c.a;
-					//o.Alpha = _Alpha;
+					o.Albedo = c.rgb * _Tint;
+					o.Alpha = _Alpha * c.a;
 				}
 		
 			ENDCG
