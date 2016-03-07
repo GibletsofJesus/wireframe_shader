@@ -3,18 +3,12 @@
 	Properties 
 	{
 		_SubBaseTex("Sub Base Texture", 2D) = "white" {}
-		_SubAlpha("Sub Texture Alpha", range(0, 1)) = 1
 		_SubTint("Sub Texture Tint Color", Color) = (1, 1, 1, 1)
-		/*_SubClipping ("Sub Clipping", range(-10,10)) = 1
-		_SubClipping2 ("Sub Clipping 2", range(1, 10)) = 1
-		_SubClipping3 ("Sub Clipping 3", range(0, 1)) = 1*/
 		
 		_BaseTex("Base Texture", 2D) = "white" {}
-		_Alpha("Base Texture Alpha", range(0, 1)) = 1
 		_Tint("Base Texture Tint Color", Color) = (1, 1, 1, 1)
 		
 		_MainTex("WF Texture", 2D) = "white" {}
-		_Fill ("WF Texture Alpha", range(0,1)) = 0 //Bools are not supported in Shader Lab. YES, REALLY.
 		_Color ("WF Color", Color) = (1,1,1,1)
 		_Thickness ("WF Thickness", range(0,10)) = 1
 		_ClippingOnOff("Clipping on/off", range(0,1)) = 0
@@ -26,28 +20,24 @@
 	SubShader
 	{
 		Tags{ "RenderType" = "Transparent" "Queue" = "Transparent" }
-		
+		Blend SrcAlpha OneMinusSrcAlpha
 			CGPROGRAM
 				#pragma surface surf Lambert alpha
 
 				sampler2D _SubBaseTex;
 				fixed4 _SubTint;
-				float _SubAlpha;//, _SubClipping, _SubClipping2, _SubClipping3;
 
 				struct Input {
 					float2 uv_SubBaseTex;
 					float3 worldPos;
+					fixed4 subTint;
 				};
 
-				void surf(Input IN, inout SurfaceOutput o) {
-				
-					//if (_SubClipping3 > 0.5f)
-					//clip (frac((IN.worldPos.y+IN.worldPos.z*_SubClipping) * _SubClipping2) - 0.5);
-					
-					fixed4 c = tex2D(_SubBaseTex, IN.uv_SubBaseTex) * _SubTint;
-					o.Albedo = c.rgb * _SubTint;
-					o.Alpha = c.a;
-					o.Alpha = _SubAlpha;
+				void surf(Input IN, inout SurfaceOutput o)
+				{
+					fixed4 c = tex2D(_SubBaseTex, IN.uv_SubBaseTex);
+					o.Albedo = c.rgb*_SubTint*c.a;
+					o.Alpha = c.a *_SubTint.a;
 				}
 		
 			ENDCG
@@ -68,9 +58,10 @@
 				
 					//clip (frac((IN.worldPos.y+IN.worldPos.z*_SubClipping) * _SubClipping2) - 0.5);
 					
-					fixed4 c = tex2D(_BaseTex, IN.uv_BaseTex) * _Tint;
-					o.Albedo = c.rgb * _Tint;
-					o.Alpha = _Alpha * c.a;
+					fixed4 c = tex2D(_BaseTex, IN.uv_BaseTex);
+					o.Albedo = c.rgb *_Tint*c.a;
+					//o.Alpha = _Alpha * c.a;
+					o.Alpha = c.a* _Tint.a;
 				}
 		
 			ENDCG
