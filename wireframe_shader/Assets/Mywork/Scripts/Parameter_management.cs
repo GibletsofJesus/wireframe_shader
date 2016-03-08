@@ -61,16 +61,4 @@ public class Parameter_management : MonoBehaviour {
 	public void SetClipping3(float newVal3)	{
 		m_renderer.material.SetFloat("_Clipping3", newVal3);
 	}
-	/*
-	public void ToggleAnimator(bool newBool)
-	{
-		m_animator.enabled = newBool;
-	}
-
-	public void ChangeAnimState(int newState){
-		m_animator.SetInteger ("state", newState);
-	}
-	public void ChangeAnimState(float newState){
-		m_animator.SetFloat ("state", newState);
-	}*/
 }
