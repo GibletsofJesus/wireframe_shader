@@ -48,21 +48,26 @@
 				sampler2D _BaseTex;
 				fixed4 _Color, _Tint;
 				float _Alpha;//, _SubClipping, _SubClipping2, _SubClipping3;
+				float _ClippingOnOff;
+				float _Clipping = 1;
+				float _Clipping2 = 1;
+				float _Clipping3 = 1;
 
 				struct Input {
 					float2 uv_BaseTex;
 					float3 worldPos;
 				};
 
-				void surf(Input IN, inout SurfaceOutput o) {
-				
-					//clip (frac((IN.worldPos.y+IN.worldPos.z*_SubClipping) * _SubClipping2) - 0.5);
-					
+				void surf(Input IN, inout SurfaceOutput o) 
+				{
+					if (_ClippingOnOff > 0.5f)
+						clip(frac((IN.worldPos.y + IN.worldPos.z*_Clipping + _Clipping3) * _Clipping2) - 0.5);
 					fixed4 c = tex2D(_BaseTex, IN.uv_BaseTex);
 					o.Albedo = c.rgb *_Tint*c.a;
 					//o.Alpha = _Alpha * c.a;
 					o.Alpha = c.a* _Tint.a;
 				}
+
 		
 			ENDCG
 
